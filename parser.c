@@ -5,6 +5,7 @@
 #define INIT_ROOT_NODE (Node**)malloc(sizeof(Node*))
 #define CREATE_NODE (Node*)malloc(sizeof(Node))
 
+static Node* plusminus();
 static Node* muldiv();
 static Node* literal();
 static Node* swap(Node*, TokenType);
@@ -13,7 +14,7 @@ static void eat(Token);
 static Token *token_array;
 static unsigned int token_array_size;
 static unsigned int token_pos = 0;
-static Token curr, prev;
+static Token curr;
 static unsigned int node_amt = 0;
 
 void initParser(Token *array, unsigned int size)
@@ -30,7 +31,7 @@ Node** parse()
 
     while(token_pos <= token_array_size)
     {
-        nodes[node_amt++] = muldiv();
+        nodes[node_amt++] = plusminus();
     }
 
     return nodes;
@@ -41,11 +42,29 @@ unsigned int getNodeAmt()
     return node_amt;
 }
 
-// Node* plusminus()
-// {
-//     node = muldiv();
-//     return node;
-// }
+static Node* plusminus()
+{
+    Node* node = muldiv();
+
+    if(curr.type == PLUS)
+    {
+        eat(curr);
+        node = swap(node, BINOP);
+        node->data.node[0] = CREATE_NODE;
+        node->data.node[0]->type = PLUS;
+        node->data.node[2] = plusminus();
+    }
+    if(curr.type == MINUS)
+    {
+        eat(curr);
+        node = swap(node, BINOP);
+        node->data.node[0] = CREATE_NODE;
+        node->data.node[0]->type = MINUS;
+        node->data.node[2] = plusminus();
+    }
+
+    return node;
+}
 
 static Node* muldiv()
 {
@@ -57,7 +76,7 @@ static Node* muldiv()
         node = swap(node, BINOP);
         node->data.node[0] = CREATE_NODE;
         node->data.node[0]->type = MUL;
-        node->data.node[2] = muldiv();
+        node->data.node[2] = plusminus();
     }
     if(curr.type == DIV)
     {
@@ -65,7 +84,7 @@ static Node* muldiv()
         node = swap(node, BINOP);
         node->data.node[0] = CREATE_NODE;
         node->data.node[0]->type = DIV;
-        node->data.node[2] = muldiv();
+        node->data.node[2] = plusminus();
     }
 
     return node;
@@ -79,6 +98,12 @@ static Node* literal()
     {
         node->type = LIT;
         node->data.value = *(curr.value);
+        eat(curr);
+    }
+    if(curr.type == LPAREN)
+    {
+        eat(curr);
+        node = plusminus();
         eat(curr);
     }
 

@@ -65,6 +65,10 @@ Token getToken()
         case '-' : return makeToken(MINUS);
         case '*' : return makeToken(MUL);
         case '/' : return makeToken(DIV);
+        case '(' : return makeToken(LPAREN);
+        case ')' : return makeToken(RPAREN);
+        case '{' : return makeToken(LBRACE);
+        case '}' : return makeToken(RBRACE);
         default :
             if(isdigit(source[pos]))
                 return makeToken(LIT);

@@ -23,7 +23,6 @@ int main(int argc, char** argv)
     initLexer(source, 'a');
     initParser(getTokens(), get_tokens_size());
     interpret(parse(), getNodeAmt());
-    //parse();
 
     free(source);
     return 0;
