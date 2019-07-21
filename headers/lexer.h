@@ -1,9 +1,15 @@
 #include "tokentypeEnum.h"
 
+//TODO: fix the hell created by this
 typedef struct Token
 {
     TokenType type;
-    int *value;
+    union
+    {
+        int value;
+        char *str;
+    } data;
+    
 
 } Token;
 

@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "headers/interpret.h"
 
 static int solveNodes(Node*);
 static int binop(Node**);
+static int logicop(Node**);
 
 void interpret(Node **parsed_nodes, unsigned int node_amt)
 {
@@ -37,8 +39,23 @@ static int binop(Node** node)
         case MINUS: result = solveNodes(node[1]) - solveNodes(node[2]); break;
         case MUL: result = solveNodes(node[1]) * solveNodes(node[2]); break;
         case DIV: result = solveNodes(node[1]) / solveNodes(node[2]); break;
+        case BANGEQ:
+        case LESSTHAN: result = logicop(node);
     }
+
+    free(node[2]);
+    free(node[1]);
+    free(node[0]);
+    free(node);
 
     return result;
 }
 
+static int logicop(Node **node)
+{
+    switch(node[0]->type)
+    {
+        case BANGEQ: return ((solveNodes(node[1]) != solveNodes(node[2]))? 1 : 0);
+        case LESSTHAN: return ((solveNodes(node[1]) < solveNodes(node[2]))? 1 : 0);
+    }
+}

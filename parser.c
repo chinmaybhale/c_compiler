@@ -5,6 +5,10 @@
 #define INIT_ROOT_NODE (Node**)malloc(sizeof(Node*))
 #define CREATE_NODE (Node*)malloc(sizeof(Node))
 
+static Node* stmts();
+static Node* expr();
+static Node* bangeq_eq();
+static Node* less_more();
 static Node* plusminus();
 static Node* muldiv();
 static Node* literal();
@@ -31,7 +35,7 @@ Node** parse()
 
     while(token_pos <= token_array_size)
     {
-        nodes[node_amt++] = plusminus();
+        nodes[node_amt++] = expr();
     }
 
     return nodes;
@@ -40,6 +44,54 @@ Node** parse()
 unsigned int getNodeAmt()
 {
     return node_amt;
+}
+
+static Node* expr()
+{
+    if(curr.type == COND)
+    {
+        eat(curr);
+        return bangeq_eq();
+    }
+
+    return plusminus();
+}
+
+static Node* bangeq_eq()
+{
+    Node* node = less_more();
+
+    if(curr.type == BANGEQ)
+    {
+        //do something
+        eat(curr);
+        node = swap(node, BINOP);
+        node->data.node[0] = CREATE_NODE;
+        node->data.node[0]->type = BANGEQ;
+        node->data.node[2] = bangeq_eq();
+    }
+    if(curr.type == EQEQ)
+    {
+        //do something
+    }
+
+    return node;
+}
+
+static Node* less_more()
+{
+    Node* node = plusminus();
+
+    if(curr.type == LESSTHAN)
+    {
+        eat(curr);
+        node = swap(node, BINOP);
+        node->data.node[0] = CREATE_NODE;
+        node->data.node[0]->type = LESSTHAN;
+        node->data.node[2] = bangeq_eq();
+    }
+
+    return node;
 }
 
 static Node* plusminus()
@@ -52,7 +104,7 @@ static Node* plusminus()
         node = swap(node, BINOP);
         node->data.node[0] = CREATE_NODE;
         node->data.node[0]->type = PLUS;
-        node->data.node[2] = plusminus();
+        node->data.node[2] = bangeq_eq();
     }
     if(curr.type == MINUS)
     {
@@ -60,7 +112,7 @@ static Node* plusminus()
         node = swap(node, BINOP);
         node->data.node[0] = CREATE_NODE;
         node->data.node[0]->type = MINUS;
-        node->data.node[2] = plusminus();
+        node->data.node[2] = bangeq_eq();
     }
 
     return node;
@@ -76,7 +128,7 @@ static Node* muldiv()
         node = swap(node, BINOP);
         node->data.node[0] = CREATE_NODE;
         node->data.node[0]->type = MUL;
-        node->data.node[2] = plusminus();
+        node->data.node[2] = bangeq_eq();
     }
     if(curr.type == DIV)
     {
@@ -84,7 +136,7 @@ static Node* muldiv()
         node = swap(node, BINOP);
         node->data.node[0] = CREATE_NODE;
         node->data.node[0]->type = DIV;
-        node->data.node[2] = plusminus();
+        node->data.node[2] = bangeq_eq();
     }
 
     return node;
@@ -97,13 +149,13 @@ static Node* literal()
     if(curr.type == LIT)
     {
         node->type = LIT;
-        node->data.value = *(curr.value);
+        node->data.value = curr.data.value;
         eat(curr);
     }
     if(curr.type == LPAREN)
     {
         eat(curr);
-        node = plusminus();
+        node = bangeq_eq();
         eat(curr);
     }
 
