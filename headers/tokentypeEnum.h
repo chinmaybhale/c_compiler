@@ -1,12 +1,12 @@
 typedef enum TokenType
 {
     //keywords
-    COND, IF, AND, OR, WHILE, VAR_I, VAR_S, PRINT,
+    IF, AND, OR, WHILE, VAR_I, VAR_S, PRINT,
 
     //binary operators
     PLUS, MINUS, MUL, DIV, 
     LESSTHAN, MORETHAN, LESSEQ, MOREEQ, EQEQ,
-    EQUAL, BANG, BANGEQ,
+    EQUAL, BANG, BANGEQ, COND,
     
     //literal
     LIT,

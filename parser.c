@@ -73,6 +73,12 @@ static Node* bangeq_eq()
     if(curr.type == EQEQ)
     {
         //do something
+        eat(curr);
+        node = swap(node, BINOP);
+        node->data.node[0] = CREATE_NODE;
+        node->data.node[0]->type = EQEQ;
+        node->data.node[2] = bangeq_eq();
+
     }
 
     return node;
@@ -90,6 +96,31 @@ static Node* less_more()
         node->data.node[0]->type = LESSTHAN;
         node->data.node[2] = bangeq_eq();
     }
+    if(curr.type == MORETHAN)
+    {
+        eat(curr);
+        node = swap(node, BINOP);
+        node->data.node[0] = CREATE_NODE;
+        node->data.node[0]->type = MORETHAN;
+        node->data.node[2] = bangeq_eq();
+    }
+    if(curr.type == LESSEQ)
+    {
+        eat(curr);
+        node = swap(node, BINOP);
+        node->data.node[0] = CREATE_NODE;
+        node->data.node[0]->type = LESSEQ;
+        node->data.node[2] = bangeq_eq();
+    }
+    if(curr.type == MOREEQ)
+    {
+        eat(curr);
+        node = swap(node, BINOP);
+        node->data.node[0] = CREATE_NODE;
+        node->data.node[0]->type = MOREEQ;
+        node->data.node[2] = bangeq_eq();
+    }
+    
 
     return node;
 }

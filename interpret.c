@@ -40,7 +40,11 @@ static int binop(Node** node)
         case MUL: result = solveNodes(node[1]) * solveNodes(node[2]); break;
         case DIV: result = solveNodes(node[1]) / solveNodes(node[2]); break;
         case BANGEQ:
-        case LESSTHAN: result = logicop(node);
+        case EQEQ:
+        case LESSTHAN:
+        case MORETHAN:
+        case LESSEQ:
+        case MOREEQ: result = logicop(node); 
     }
 
     free(node[2]);
@@ -56,6 +60,10 @@ static int logicop(Node **node)
     switch(node[0]->type)
     {
         case BANGEQ: return ((solveNodes(node[1]) != solveNodes(node[2]))? 1 : 0);
+        case EQEQ: return ((solveNodes(node[1]) == solveNodes(node[2]))? 1 : 0);
         case LESSTHAN: return ((solveNodes(node[1]) < solveNodes(node[2]))? 1 : 0);
+        case MORETHAN: return ((solveNodes(node[1]) > solveNodes(node[2]))? 1 : 0);
+        case LESSEQ: return ((solveNodes(node[1]) <= solveNodes(node[2]))? 1 : 0);
+        case MOREEQ: return ((solveNodes(node[1]) >= solveNodes(node[2]))? 1 : 0);
     }
 }
